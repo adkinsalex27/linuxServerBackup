@@ -3,6 +3,7 @@
 # Set variables for intervals
 BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups
 DAILY_BACKUP_HOUR=24 #hour in which the daily backup will be created
+DAILY_RESET_HOUR=23 #Needs to be different than DAILY_BACKUP_HOUR. TODO: refactor to remove this. Can't just add or sub 1 because I could end up with -1 or 25
 
 # Set variables for folders
 PARENT_FOLDER="path/to/folder"
@@ -31,6 +32,11 @@ delete_old_backups() {
     echo "Old backups deleted."
 }
 
+#make dirs if needed
+mkdir -p $DESTINATION_FOLDER
+mkdir -p "${DESTINATION_FOLDER}/regularBackups"
+mkdir -p "${DESTINATION_FOLDER}/dailyBackups"
+
 # Main loop
 while true; do
     current_hour=$(date '+%H')
@@ -43,7 +49,7 @@ while true; do
     fi
 
     # Once the daily backup hour has passed, reset the daily_backup flag
-    if [ "$current_hour" -eq "$DAILY_BACKUP_HOUR" + 1 ]; then
+    if [ "$current_hour" -eq "$DAILY_RESET_HOUR" ]; then
         daily_backup_created=false
     fi
 
