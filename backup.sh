@@ -3,7 +3,6 @@
 # Set variables for intervals
 BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups
 DAILY_BACKUP_HOUR=24 #hour in which the daily backup will be created
-DAILY_RESET_HOUR=23 #Needs to be different than DAILY_BACKUP_HOUR. TODO: refactor to remove this. Can't just add or sub 1 because I could end up with -1 or 25
 
 # Set variables for folders
 PARENT_FOLDER="path/to/folder"
@@ -48,10 +47,9 @@ while true; do
         daily_backup_created=true
     fi
 
-    # Once the daily backup hour has passed, reset the daily_backup flag
-    if [ "$current_hour" -eq "$DAILY_RESET_HOUR" ]; then
+    #reset daily_backup_created flag
+    if [ "$current_hour" -ne "$DAILY_BACKUP_HOUR" ]; then
         daily_backup_created=false
-    fi
 
     # Create regular backup
     create_backup $SOURCE_FOLDER $regular_backup_path
