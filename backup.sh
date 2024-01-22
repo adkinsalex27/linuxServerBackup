@@ -3,8 +3,9 @@
 PARENT_FOLDER="/path/to/folder"
 SOURCE_FOLDER="${PARENT_FOLDER}/folderNameHere"
 
-### No changes needed beyond this point. Can be updated to customize ###
+### Update the following to customize backups ###
 BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups. Do not exceed 1 day
+MAX_BACKUP_AGE_DAYS=30       # Maximum age of regular backups to retain. Daily backups will be retained indefinitely
 DESTINATION_FOLDER="${PARENT_FOLDER}/backups"
 
 # Variables to track daily backup status
@@ -26,7 +27,7 @@ create_backup() {
 # Function to delete old backups
 delete_old_backups() {
     backup_folder=$1
-    find "$backup_folder" -type d -mtime +30 -exec rm -r {} \;
+    find "$backup_folder" -type d -mtime +"$MAX_BACKUP_AGE_DAYS" -exec rm -r {} \;
     echo "Old backups deleted."
 }
 
