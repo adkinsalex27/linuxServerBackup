@@ -1,17 +1,15 @@
 #!/bin/bash
-
-# Set variables for intervals
-#TODO: if minutes is greater than 60 it is possible the daily backup will not be hit. Need to find a solution to this
-BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups
-DAILY_BACKUP_HOUR=24 #hour in which the daily backup will be created
-
-# Set variables for folders
-PARENT_FOLDER="path/to/folder"
+### Update these before running ###
+PARENT_FOLDER="/path/to/folder"
 SOURCE_FOLDER="${PARENT_FOLDER}/folderNameHere"
+
+### No changes needed beyond this point. Can be updated to customize ###
+BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups. Do not exceed 1 day
 DESTINATION_FOLDER="${PARENT_FOLDER}/backups"
 
-# Variable to track daily backup status
-daily_backup_created=false
+# Variables to track daily backup status
+daily_task_ran=false #have we ran the daily task today
+last_daily_task_date="" #used to check if it's a new day since last daily task
 
 # Function to create a backup folder
 create_backup() {
@@ -32,33 +30,38 @@ delete_old_backups() {
     echo "Old backups deleted."
 }
 
+# Function to check if a new day has started
+check_new_day() {
+    current_date=$(date '+%Y%m%d')
+    if [ "$current_date" != "$last_daily_task_date" ]; then
+        last_daily_task_date="$current_date"
+        daily_task_ran=false
+    fi
+}
+
 #make dirs if needed
 mkdir -p $DESTINATION_FOLDER
 mkdir -p "${DESTINATION_FOLDER}/regularBackups"
 mkdir -p "${DESTINATION_FOLDER}/dailyBackups"
 
+#create path var
+regular_backup_path="${DESTINATION_FOLDER}/regularBackups/regular_backup"
+
 # Main loop
 while true; do
-    current_hour=$(date '+%H')
-    regular_backup_path="${DESTINATION_FOLDER}/regularBackups/regular_backup"
 
     # Check if it's time for a daily backup
-    if [ "$current_hour" -eq "$DAILY_BACKUP_HOUR" ] && [ "$daily_backup_created" = false ]; then
+    check_new_day()
+    if [ "$daily_task_ran" = false ]; then
         create_backup $SOURCE_FOLDER "${DESTINATION_FOLDER}/dailyBackups/daily_backup"
-        daily_backup_created=true
-    fi
+        daily_task_ran=true
 
-    #reset daily_backup_created flag
-    if [ "$current_hour" -ne "$DAILY_BACKUP_HOUR" ]; then
-        daily_backup_created=false
+        # Delete old backups once a day
+        delete_old_backups $regular_backup_path
+    fi
 
     # Create regular backup
     create_backup $SOURCE_FOLDER $regular_backup_path
-
-    # Delete old backups once a day
-    if [ "$current_hour" -eq "$DAILY_BACKUP_HOUR" ]; then
-        delete_old_backups $regular_backup_path
-    fi
 
     # Sleep for configured minutes
     sleep $((BACKUP_INTERVAL_MINUTES * 60))
