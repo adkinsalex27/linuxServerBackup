@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set variables for intervals
-BACKUP_INTERVAL_MINUTES=30
+BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups
 DAILY_BACKUP_HOUR=24 #hour in which the daily backup will be created
 
 # Set variables for folders
