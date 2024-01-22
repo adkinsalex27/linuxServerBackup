@@ -51,7 +51,7 @@ regular_backup_path="${DESTINATION_FOLDER}/regularBackups/regular_backup"
 while true; do
 
     # Check if it's time for a daily backup
-    check_new_day()
+    check_new_day
     if [ "$daily_task_ran" = false ]; then
         create_backup $SOURCE_FOLDER "${DESTINATION_FOLDER}/dailyBackups/daily_backup"
         daily_task_ran=true
