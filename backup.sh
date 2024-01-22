@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Set variables for intervals
+#TODO: if minutes is greater than 60 it is possible the daily backup will not be hit. Need to find a solution to this
 BACKUP_INTERVAL_MINUTES=30 #how many minutes to wait between backups
 DAILY_BACKUP_HOUR=24 #hour in which the daily backup will be created
 
