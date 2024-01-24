@@ -46,7 +46,7 @@ mkdir -p "${DESTINATION_FOLDER}/regularBackups"
 mkdir -p "${DESTINATION_FOLDER}/dailyBackups"
 
 #create path var
-regular_backup_path="${DESTINATION_FOLDER}/regularBackups/regular_backup"
+regular_backup_path="${DESTINATION_FOLDER}/regularBackups/regular_backup" # Important: Old files will be deleted based on this path
 
 # Main loop
 while true; do
@@ -58,7 +58,7 @@ while true; do
         daily_task_ran=true
 
         # Delete old backups once a day
-        delete_old_backups $regular_backup_path
+        delete_old_backups "${regular_backup_path}*"
     fi
 
     # Create regular backup
